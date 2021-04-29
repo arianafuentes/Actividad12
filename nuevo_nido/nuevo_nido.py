@@ -192,31 +192,31 @@ class NuevoNido:
             self.dlg = NuevoNidoDialog()
             #QMessageBox.information(self.dlg, "Mensaje", "Esto solo debe correr una vez")
             self.dlg.cmbEstado.currentTextChanged.connect(self.evt_cmbEstado_change)
-            self.dlg.cmbEspecie.currentTextChanged.connect(self.evt_cmbEspecie_change)
+            #self.dlg.cmbEspecie.currentTextChanged.connect(self.evt_cmbEspecie_change) #No necesita hacer las dos conexiones, podemos usar la misma ya creada
             #QMessageBox.information(self.dlg, "Mensaje", "Esto solo debe correr siempre")
-            #Crear conexion al mapa 
-            mc = self.iface.mapCanvas() 
-            self.dlg.spbX.setValue(mc.center().x()) 
-            self.dlg.spbY.setValue(mc.center().y())  
-            self.dlg.dteFecha.setDate(QDate.currentDate())
+        #Crear conexion al mapa #ESTO DEBE ESTAR FUERA DEL BLOQUE IF, YA QUE SOLO SE EJECUTA UNA VEZ. POR ESTO CREA SIEMPRE EL NIDO EN EL MISMO LUGAR, YA QUE NO ACTUALIZA EL CENTRO DEL MAPA 
+        mc = self.iface.mapCanvas() 
+        self.dlg.spbX.setValue(mc.center().x()) 
+        self.dlg.spbY.setValue(mc.center().y())  
+        self.dlg.dteFecha.setDate(QDate.currentDate())
 
 
-            #Revisar que las capas esten cargadas 
-            map_layers = [] 
-            for lyr in mc.layers(): 
-                map_layers.append(lyr.name()) 
-
-            missing_layers = [] 
-            if not "Avistamientos" in map_layers: 
-                missing_layers.append("Avistamientos") 
-            if not "Buffer Nidos" in map_layers: 
-                missing_layers.append("Buffer Nidos") 
-            if missing_layers: 
-                msg = "Las siguientes capas hacen faltas en este proyecto" 
-                for lyr in missing_layers: 
-                    msg += f"\n(lyr)"
-                QMessageBox.critical(self.dlg, "Capas Faltantes", msg) 
-                return 
+        #Revisar que las capas esten cargadas #IGUAL A LO ANTERIOR. DEBE ESTAR FUERA DEL IF
+        map_layers = [] 
+        for lyr in mc.layers(): 
+            map_layers.append(lyr.name()) 
+        
+        missing_layers = [] 
+        if not "Avistamientos" in map_layers: 
+            missing_layers.append("Avistamientos") 
+        if not "Buffer Nidos" in map_layers: 
+            missing_layers.append("Buffer Nidos") 
+        if missing_layers: 
+            msg = "Las siguientes capas hacen faltas en este proyecto" 
+            for lyr in missing_layers: 
+                msg += f"\n(lyr)"
+            QMessageBox.critical(self.dlg, "Capas Faltantes", msg) 
+            return 
 
         # show the dialog
         self.dlg.show()
@@ -296,7 +296,8 @@ class NuevoNido:
 
     def evt_cmbEstado_change(self, estado): 
         especie = self.dlg.cmbEspecie.currentText()
-        print(estado, especie)
+        #print(estado, especie) # Para mostrar la informacion no sirve un print, debe usar un QMessageBox
+        QMessageBox.information(self.dlg, "Mensaje", f"Especie = {especie}\nEstado = {estado}") #Aunque no es necesario le permite identificar si esta usando los valores correctos
         if estado == "Nido Activo" and especie == "Colibri Esmeralda": 
             self.dlg.spbBufDist.setValue(600)
         elif estado == "Nido Inactivo" and especie == "Colibri Esmeralda": 
@@ -309,18 +310,18 @@ class NuevoNido:
             self.dlg.spbBufDist.setValue(200)
         else: 
             self.dlg.spbBufDist.setValue(100)
-    def evt_cmbEspecie_change(self, especie):
-        estado = self.dlg.cmbEstado.currentText() 
-        print(especie, estado)
-        if estado == "Nido Activo" and especie == "Colibri Esmeralda": 
-            self.dlg.spbBufDist.setValue(600)
-        elif estado == "Nido Inactivo" and especie == "Colibri Esmeralda": 
-            self.dlg.spbBufDist.setValue(300)
-        elif estado == "Nido Activo" and especie == "Colibri": 
-            self.dlg.spbBufDist.setValue(400)
-        elif estado == "Nido Inactivo" and especie == "Colibri": 
-            self.dlg.spbBufDist.setValue(200)
-        elif estado == "Nido Activo" and especie == "No identificado": 
-            self.dlg.spbBufDist.setValue(200)
-        else: 
-            self.dlg.spbBufDist.setValue(100)  
+    #def evt_cmbEspecie_change(self, especie):
+    #    estado = self.dlg.cmbEstado.currentText() 
+    #    print(especie, estado)
+    #    if estado == "Nido Activo" and especie == "Colibri Esmeralda": 
+    #        self.dlg.spbBufDist.setValue(600)
+    #    elif estado == "Nido Inactivo" and especie == "Colibri Esmeralda": 
+    #        self.dlg.spbBufDist.setValue(300)
+    #    elif estado == "Nido Activo" and especie == "Colibri": 
+    #        self.dlg.spbBufDist.setValue(400)
+    #    elif estado == "Nido Inactivo" and especie == "Colibri": 
+    #        self.dlg.spbBufDist.setValue(200)
+    #    elif estado == "Nido Activo" and especie == "No identificado": 
+    #        self.dlg.spbBufDist.setValue(200)
+    #    else: 
+    #        self.dlg.spbBufDist.setValue(100)  
